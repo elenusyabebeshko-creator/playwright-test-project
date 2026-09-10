@@ -1,0 +1,23 @@
+{
+  "name": "playwright-test-project",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/elenusyabebeshko-creator/playwright-test-project.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/elenusyabebeshko-creator/playwright-test-project/issues"
+  },
+  "homepage": "https://github.com/elenusyabebeshko-creator/playwright-test-project#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.63.0",
+    "@types/node": "^26.5.0"
+  }
+}
