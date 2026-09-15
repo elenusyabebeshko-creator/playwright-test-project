@@ -46,7 +46,7 @@ module.exports = defineConfig({
     },
 
     // trace/screenshot/video: фіксація фейлів лише коли вони справді потрібні (а не на кожен тест)
-    trace: "on-first-retry",
+    trace: "on-first-retry", // або 'retain-on-failure',
     screenshot: "only-on-failure",
     video: "retain-on-failure",
   },
@@ -57,6 +57,7 @@ module.exports = defineConfig({
       name: "chromium",
       use: { ...devices["Desktop Chrome"] },
     },
+    /*
     {
       name: "firefox",
       use: { ...devices["Desktop Firefox"] },
@@ -64,6 +65,7 @@ module.exports = defineConfig({
     {
       name: "webkit",
       use: { ...devices["Desktop Safari"] },
-    },
+    }, 
+    */
   ],
 });
