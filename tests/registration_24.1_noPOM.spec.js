@@ -1,6 +1,6 @@
 const { test, expect } = require("@playwright/test");
 
-// Returns the validation-message locator that sits under the given input.
+// Returns the validation-message locator that is shown after empty field or incorrect input
 function errorFor(input) {
   return input
     .locator('xpath=ancestor::div[contains(@class,"form-group")]')
@@ -140,6 +140,7 @@ test("TC-05 - negative: Password does not meet the complexity rules", async ({
   await expect(errorFor(passwordInput)).toHaveText(
     "Password has to be from 8 to 15 characters long and contain at least one integer, one capital, and one small letter",
   );
+  await expect(passwordInput).toHaveClass(/is-invalid/);
   await expect(registerButton).toBeDisabled();
 });
 
