@@ -18,6 +18,7 @@
   "homepage": "https://github.com/elenusyabebeshko-creator/playwright-test-project#readme",
   "devDependencies": {
     "@playwright/test": "^1.63.0",
-    "@types/node": "^26.5.0"
+    "@types/node": "^26.5.0",
+    "dotenv": "^16.6.1"
   }
 }
