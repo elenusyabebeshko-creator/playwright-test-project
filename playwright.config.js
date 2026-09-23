@@ -1,6 +1,10 @@
 //MODIFIED file
 // @ts-check
 const { defineConfig, devices } = require("@playwright/test");
+require("dotenv").config();
+
+//import path from "path";
+//dotenv.config({ path: path.resolve(__dirname, "..", ".env") });
 
 module.exports = defineConfig({
   // Усі спек-файли лежать у ./tests (стандартна назва, яку пропонує `npm init playwright@latest` за замовчуванням).
@@ -35,15 +39,23 @@ module.exports = defineConfig({
   },
   // Застосунок https://qauto.forstudy.space/ з Basic Auth як guest/welcome2qauto
   use: {
-    baseURL: "https://qauto.forstudy.space",
+    baseURL: process.env.BASE_URL || "https://qauto.forstudy.space",
+    // було: "https://qauto.forstudy.space"
 
     // ! на відміну від Cypress, де auth треба було передавати в кожний cy.visit()/cy.request()
     // у Playwright достатньо задати httpCredentials один раз у конфігу —
     // і вони будуть застосовані до кожного запиту автоматично
+
     httpCredentials: {
-      username: "guest",
-      password: "welcome2qauto",
+      username: process.env.HTTP_USERNAME || "guest",
+      password: process.env.HTTP_PASSWORD || "welcome2qauto",
     },
+    // було: { username: "guest", password: "welcome2qauto" }
+    /**
+     * або ще варіант з лекції
+     * username: process.env.HTTP_USERNAME ?? "",
+     * password: process.env.HTTP_PASSWORD ?? "",
+     */
 
     // trace/screenshot/video: фіксація фейлів лише коли вони справді потрібні (а не на кожен тест)
     trace: "on-first-retry", // або 'retain-on-failure',

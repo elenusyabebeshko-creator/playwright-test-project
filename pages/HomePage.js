@@ -33,6 +33,7 @@ class HomePage {
   }
 
   async clickGuestLogButton() {
+    await this.guestLoginButton.click();
     await this.page.waitForURL("/panel/garage");
     return new GaragePage(this.page);
   }
