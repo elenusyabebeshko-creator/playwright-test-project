@@ -63,13 +63,20 @@ module.exports = defineConfig({
     video: "retain-on-failure",
   },
 
-  // Три основні браузерні "проєкти"
+  // Два основні проекти
+  // 1 - Setup проект, що логінить мого юзера і зберігає storage state до старту тест проекту
+  // 2 - тести на Chromium (Desktop Chrome)
   projects: [
+    { name: "setup", testMatch: "tests/auth.setup.js" },
+    // можна ще так записати з викристанням regex, якщо б було кілька setup-файлів
+    // { name: "setup", testMatch: /.*\.setup\.js/ },
     {
       name: "chromium",
       use: { ...devices["Desktop Chrome"] },
-    },
-    /*
+      // Гарантує, що "setup" завжди відпрацює першим
+      // і storage state  встигне записатись до того, як фікстура userGaragePage спробує його прочитати
+      dependencies: ["setup"],
+      /*
     {
       name: "firefox",
       use: { ...devices["Desktop Firefox"] },
@@ -79,5 +86,6 @@ module.exports = defineConfig({
       use: { ...devices["Desktop Safari"] },
     }, 
     */
+    },
   ],
 });
