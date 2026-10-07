@@ -1,0 +1,16 @@
+services:
+  playwright:
+    build:
+      context: .
+      args:
+        PLAYWRIGHT_VERSION: 1.63.0
+    image: playwright-test-project:latest
+    ipc: host
+    env_file:
+      - .env
+    volumes:
+      - .:/work
+      - playwright_node_modules:/work/node_modules
+
+volumes:
+  playwright_node_modules:
