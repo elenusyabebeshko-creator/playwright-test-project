@@ -1,0 +1,91 @@
+name: Playwright tests in Docker
+
+on:
+  # Ручний запуск з UI (Actions -> Playwright tests in Docker -> Run workflow) зі змінними
+  workflow_dispatch:
+    inputs:
+      playwright_version:
+        description: "Версія Playwright (= тег образу mcr.microsoft.com/playwright:v<версія>-jammy)"
+        required: true
+        type: string
+        default: "1.39.0"
+      project:
+        description: "Playwright project з playwright.config.js"
+        required: true
+        type: choice
+        default: chromium
+        options:
+          - chromium
+      base_url:
+        description: "BASE_URL застосунку"
+        required: true
+        type: choice
+        default: "https://qauto.forstudy.space"
+        options:
+          - "https://qauto.forstudy.space"
+          - "https://qauto2.forstudy.space"
+      workers:
+        description: "Кількість воркерів"
+        required: true
+        type: string
+        default: "1"
+  # Автоматичний запуск на PR / push у main (в цьому випадку беруться дефолтні значення нижче)
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  playwright-run:
+    name: Playwright (${{ inputs.project || 'chromium' }}) in Docker
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    # Увесь job (всі steps) виконується ВСЕРЕДИНІ Docker-контейнера з образу Playwright
+    container:
+      image: mcr.microsoft.com/playwright:v${{ inputs.playwright_version || '1.39.0' }}-jammy
+      options: --ipc=host # рекомендація Playwright для Chromium у Docker
+
+    env:
+      PW_VERSION: ${{ inputs.playwright_version || '1.39.0' }}
+      PROJECT: ${{ inputs.project || 'chromium' }}
+      WORKERS: ${{ inputs.workers || '1' }}
+      BASE_URL: ${{ inputs.base_url || 'https://qauto.forstudy.space' }}
+      HTTP_USERNAME: guest
+      HTTP_PASSWORD: welcome2qauto
+      TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL }}
+      TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
+      HOME: /root # рекомендація Playwright для запуску в контейнері на GitHub Actions
+      CI: true
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Show environment inside container
+        run: |
+          echo "Image: mcr.microsoft.com/playwright:v${PW_VERSION}-jammy"
+          echo "Project: $PROJECT | Workers: $WORKERS | BASE_URL: $BASE_URL"
+          node -v && npm -v
+          cat /etc/os-release | head -2
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Браузери в образі зібрані під конкретну версію Playwright,
+      # тому ставимо @playwright/test тієї ж версії, що й образ (без зміни package.json)
+      - name: Align @playwright/test with image version
+        run: |
+          npm install --no-save @playwright/test@${PW_VERSION}
+          npx playwright --version
+
+      - name: Run Playwright tests
+        run: npx playwright test --project="$PROJECT" --workers="$WORKERS"
+
+      - name: Upload Playwright report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 14
